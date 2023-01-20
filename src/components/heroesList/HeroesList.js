@@ -2,7 +2,7 @@ import { useRequest } from '../../hooks/request.hook';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { heroesFetching, heroesFetched, heroesFetchingError } from '../../actions';
+import { heroesFetching, heroesFetched, heroesFetchingError, heroDeleted } from '../../actions';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
 
@@ -24,13 +24,19 @@ const HeroesList = () => {
         return <h5 className="text-center mt-5">Loading error...</h5>
     }
 
+    const onHeroDelete = (id) => {
+        request(`http://localhost:3001/heroes/${id}`, "DELETE")
+            .then(dispatch(heroDeleted(id)))
+            .catch(e => console.log(e));
+    }
+
     const renderHeroesList = (heroesList) => {
         if (heroesList.length === 0) {
             return <h5 className="text-center mt-5">There are no heroes yet.</h5>
         }
 
         return heroesList.map(({id, ...props}) => {
-            return <HeroesListItem key={id} {...props} />
+            return <HeroesListItem key={id} {...props} onHeroDelete = {() => onHeroDelete(id)} />
         })
     }
 
