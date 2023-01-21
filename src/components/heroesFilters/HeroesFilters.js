@@ -1,14 +1,57 @@
+import { useRequest } from '../../hooks/request.hook';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import classNames from 'classnames';
+
+import { filtersFetching, filtersFetched, filtersFetchingError, activeFilterChanged } from '../../actions';
+import Spinner from '../spinner/Spinner';
+
 const HeroesFilters = () => {
+    const {filters, filtersLoadingStatus, activeFilter} = useSelector(state => state);
+    const dispatch = useDispatch();
+    const {request} = useRequest();
+
+    useEffect(() => {
+        dispatch(filtersFetching());
+        request("http://localhost:3001/filters")
+            .then(data => dispatch(filtersFetched(data)))
+            .catch(() => dispatch(filtersFetchingError()))
+    }, []);
+
+    if (filtersLoadingStatus === "loading") {
+        return <Spinner />;
+    } else if (filtersLoadingStatus === "error") {
+        return <h5 className="text-center mt-5">Loading error...</h5>
+    }
+
+    const renderFiltersList = (filtersList) => {
+        if (filtersList.length === 0) {
+            return <h5 className="text-center mt-5">There are no filters available.</h5>
+        }
+
+        return filtersList.map(({name, label, className}) => {
+            const filterClassName = classNames('btn', className, {
+                'active': name === activeFilter
+             });
+
+            return <button 
+                        key={name} 
+                        id={name}
+                        className={filterClassName}
+                        onClick={() => dispatch(activeFilterChanged(name))} >
+                        {label}
+                    </button>
+        })
+    }
+
+    const elements = renderFiltersList(filters);
+
     return (
         <div className="card shadow-lg mt-4">
             <div className="card-body">
                 <p className="card-text">Filter heroes by the elements</p>
                 <div className="btn-group">
-                    <button className="btn btn-outline-dark active">All</button>
-                    <button className="btn btn-danger">Fire</button>
-                    <button className="btn btn-primary">Water</button>
-                    <button className="btn btn-success">Air</button>
-                    <button className="btn btn-secondary">Earth</button>
+                    {elements}
                 </div>
             </div>
         </div>
