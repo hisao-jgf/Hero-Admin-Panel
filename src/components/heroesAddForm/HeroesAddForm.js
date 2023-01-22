@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { heroCreated } from '../../actions';
 
 const HeroesAddForm = () => {
-    const {heroes} = useSelector(state => state);
+    const {heroes} = useSelector(state => state.heroes);
+    const {filters, filtersLoadingStatus} = useSelector(state => state.filters);
 
     const [heroName, setHeroName] = useState('');
     const [heroDescription, setHeroDescription] = useState('');
@@ -31,6 +32,27 @@ const HeroesAddForm = () => {
         setHeroName('');
         setHeroDescription('');
         setHeroElement('');
+    }
+
+    const renderOptions = (filters, status) => {
+        if (status === 'loading') {
+            return <option>Loading filters...</option>
+        } else if (status === 'error') {
+            return <option>Loading error...</option>
+        }
+
+        if (filters && filters.length > 0) {
+            return filters.map(({name, label}) => {
+                if (name === 'all') return;
+
+                return <option
+                            key={name}
+                            value={name}
+                        >
+                            {label}
+                        </option>
+            })
+        }
     }
 
     return (
@@ -71,10 +93,9 @@ const HeroesAddForm = () => {
                     value={heroElement}
                     onChange={(e) => setHeroElement(e.target.value)} >
                     <option >I bend the element of...</option>
-                    <option value="fire">Fire</option>
-                    <option value="water">Water</option>
-                    <option value="air">Air</option>
-                    <option value="earth">Earth</option>
+                    {
+                        renderOptions(filters, filtersLoadingStatus)
+                    }
                 </select>
             </div>
 
