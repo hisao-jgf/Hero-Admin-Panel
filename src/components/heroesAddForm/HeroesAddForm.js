@@ -2,7 +2,7 @@ import { useRequest } from '../../hooks/request.hook';
 import { useState } from "react";
 import { useDispatch, useSelector } from 'react-redux';
 
-import { heroCreated } from '../../actions';
+import { heroCreated } from '../heroesList/heroesSlice';
 
 const HeroesAddForm = () => {
     const {heroes} = useSelector(state => state.heroes);
