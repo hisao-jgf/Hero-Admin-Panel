@@ -3,13 +3,13 @@ import { useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'reselect';
 
-import { heroDeleted, fetchHeroes } from './heroesSlice';
+import { heroDeleted, fetchHeroes, selectAllHeroes } from './heroesSlice';
 import HeroesListItem from "../heroesListItem/HeroesListItem";
 import Spinner from '../spinner/Spinner';
 
 const HeroesList = () => {
     const filteredHeroesSelector = createSelector(
-        state => state.heroes.heroes,
+        selectAllHeroes.selectAll,
         state => state.filters.activeFilter,
         (heroes, filter) => {
             if (filter === 'all') {
